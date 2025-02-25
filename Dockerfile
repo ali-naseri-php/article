@@ -27,5 +27,6 @@ RUN composer install --no-dev --optimize-autoloader
 # تنظیم مجوزهای لازم
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
+
 # اجرای Laravel queue worker
 CMD ["php-fpm"]
