@@ -9,11 +9,11 @@ Route::prefix('v1')->name('v1.')->group(function () {
         ->name('articles.')
         ->controller(\App\Http\Controllers\API\ArticleController::class)
         ->group(function () {
-            Route::get('/', 'pendingParcels')->name('index');
+            Route::get('/', 'index')->name('index');
             Route::
                 middleware('auth:api')
                 ->group(function () {
-                    Route::get('/store', 'ali')->name('store');
+                    Route::get('store', 'store')->name('store');
                 });
         });
 });
