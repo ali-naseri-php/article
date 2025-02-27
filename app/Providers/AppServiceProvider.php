@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Repositories\Eloquent\ArticleRepository;
+use App\Repositories\Interfaces\ArticleRepositoryInterface;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
 
@@ -13,6 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
 
+        $this->app->bind(ArticleRepositoryInterface::class, ArticleRepository::class);
     }
 
     /**
