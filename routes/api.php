@@ -2,7 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 
-
+Route::get('ping', function () {
+    return response()->json(['pong' => true],200);
+});
 Route::post('login',[\App\Http\Controllers\API\AuthController::class,'login'])->middleware('throttle:5,1');
 Route::post('register',[\App\Http\Controllers\API\AuthController::class,'register']);
 Route::prefix('v1')->name('v1.')->group(function () {

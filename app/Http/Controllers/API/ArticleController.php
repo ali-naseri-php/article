@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Article\PaginateRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
 use App\DTOs\ArticleDTO;
 use App\Http\Resources\ArticleResource;
+use App\Models\Article;
 use App\Services\ArticleService;
 use Illuminate\Http\JsonResponse;
 
@@ -18,17 +20,34 @@ class ArticleController extends Controller
         $this->articleService = $articleService;
     }
 
+    public function index(PaginateRequest $request)
+    {
+
+        $articles = $this->articleService->indexArticle($request->validated());
+        return ArticleResource::collection($articles->items())
+            ->additional([
+                'meta' => [
+                    'current_page' => $articles->currentPage(),
+                    'total' => $articles->total(),
+                    'per_page' => $articles->perPage(),
+                    'last_page' => $articles->lastPage(),
+                    'next_page_url' => $articles->nextPageUrl(),
+                    'prev_page_url' => $articles->previousPageUrl(),
+                ]
+            ]);
+    }
+
     public function store(StoreArticleRequest $request): JsonResponse
     {
         $validated = $request->validated();
         $validated['user_id'] = $request->user()->id;
 
         $articleDTO = ArticleDTO::fromArray($validated);
-        $article    = $this->articleService->storeArticle($articleDTO);
+        $article = $this->articleService->storeArticle($articleDTO);
 
         return response()->json([
             'message' => 'مقاله با موفقیت ایجاد شد',
-            'data'    => new ArticleResource($article),
+            'data' => new ArticleResource($article),
         ], 201);
     }
 }
