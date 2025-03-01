@@ -17,6 +17,17 @@ class ArticleRepository implements ArticleRepositoryInterface
             'user_id' => $articleDTO->user_id,
         ]);
     }
+    public function update(int $id, ArticleDTO $articleDTO): Article
+    {
+        $article = Article::findOrFail($id);
+
+        $article->update([
+            'title'   => $articleDTO->title,
+            'content' => $articleDTO->content,
+        ]);
+
+        return $article;
+    }
     public function index(array $filters, int $perPage, int $page):LengthAwarePaginator
     {
         $query = Article::query();

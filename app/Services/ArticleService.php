@@ -25,6 +25,12 @@ class ArticleService
 
         return $this->articleRepository->index($filters, $perPage, $page);
     }
+    public function updateArticle(int $id, ArticleDTO $articleDTO)
+    {
+        $article = $this->articleRepository->update($id, $articleDTO);
+
+        return $article;
+    }
     public function storeArticle(ArticleDTO $articleDTO)
     {
         $article = $this->articleRepository->store($articleDTO);

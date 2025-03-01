@@ -16,7 +16,8 @@ Route::prefix('v1')->name('v1.')->group(function () {
             Route::
                 middleware('auth:api')
                 ->group(function () {
-                    Route::get('store', 'store')->name('store');
+                    Route::post('', 'store')->name('store');
+                    Route::put('/{id}', 'update')->name('update');
                 });
         });
 });

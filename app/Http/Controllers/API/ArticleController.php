@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\PaginateRequest;
 use App\Http\Requests\Article\StoreArticleRequest;
 use App\DTOs\ArticleDTO;
+use App\Http\Requests\Article\UpdateArticleRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use App\Services\ArticleService;
@@ -36,7 +37,24 @@ class ArticleController extends Controller
                 ]
             ]);
     }
+    public function update(UpdateArticleRequest $request, int $id): JsonResponse
+    {
+        $article = Article::findOrFail($id);
 
+        $validated = $request->validated();
+
+        $articleDTO = ArticleDTO::fromArray([
+            'title'   => $validated['title'],
+            'content' => $validated['content'],
+            'user_id' => $article->user_id,
+        ]);
+        $updatedArticle = $this->articleService->updateArticle($id, $articleDTO);
+
+        return response()->json([
+            'message' => 'مقاله با موفقیت اپدیت شد',
+            'data' => new ArticleResource($updatedArticle),
+        ], 201);
+    }
     public function store(StoreArticleRequest $request): JsonResponse
     {
         $validated = $request->validated();
