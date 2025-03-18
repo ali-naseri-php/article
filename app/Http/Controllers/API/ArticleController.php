@@ -39,8 +39,7 @@ class ArticleController extends Controller
     }
     public function update(UpdateArticleRequest $request, int $id): JsonResponse
     {
-        
-        $this->authorize('update', $id);
+
         $article = Article::findOrFail($id);
 
         $validated = $request->validated();

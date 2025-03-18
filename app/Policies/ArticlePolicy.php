@@ -10,10 +10,6 @@ class ArticlePolicy
 {
     
 
-
-    /**
-     * تعیین اینکه آیا کاربر می‌تواند یک مقاله را ویرایش کند.
-     */
     public function update(User $user, Article $article): bool
     {
         return $user->id === $article->user_id ;
