@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\LoginRequest;
 use App\Http\Requests\Article\RegisterRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController  extends Controller
@@ -26,7 +27,7 @@ class AuthController  extends Controller
     }
     public function login(LoginRequest $request)
     {
-        if (!Auth::attempt($request)) {
+        if (!Auth::attempt($request->only(['email', 'password']))) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 

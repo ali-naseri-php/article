@@ -20,6 +20,18 @@ Route::prefix('v1')->name('v1.')->group(function () {
                     Route::put('/{id}', 'update')->name('update');
                 });
         });
+        Route::prefix('comment')
+        ->name('comment.')
+        ->controller(\App\Http\Controllers\API\ArticleController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::
+                middleware('auth:api')
+                ->group(function () {
+                    Route::post('', 'store')->name('store');
+                    Route::put('/{id}', 'update')->name('update');
+                });
+        });
 });
 
 
