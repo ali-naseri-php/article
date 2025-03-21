@@ -22,7 +22,7 @@ Route::prefix('v1')->name('v1.')->group(function () {
         });
         Route::prefix('comment')
         ->name('comment.')
-        ->controller(\App\Http\Controllers\API\ArticleController::class)
+        ->controller(\App\Http\Controllers\API\CommentController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::

@@ -2,71 +2,57 @@
 
 namespace App\Http\Controllers\API;
 
+use App\DTOs\CommentDTO;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Article\PaginateRequest;
-use App\Http\Requests\Article\StoreArticleRequest;
-use App\DTOs\ArticleDTO;
-use App\Http\Requests\Article\UpdateArticleRequest;
-use App\Http\Resources\ArticleResource;
-use App\Models\Article;
-use App\Services\ArticleService;
-use Illuminate\Http\JsonResponse;
+use App\Http\Requests\Article\StoreCommentRequest;
+use App\Http\Requests\Article\UpdateCommentRequest;
+use App\Http\Resources\CommentResource;
+
+use App\Services\CommentService;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 class CommentController  extends Controller
 {
-    protected ArticleService $articleService;
+    protected CommentService $commentService;
 
-    public function __construct(ArticleService $articleService)
+    public function __construct(CommentService $commentService)
     {
-        $this->articleService = $articleService;
+        $this->commentService = $commentService;
     }
 
-    public function index(PaginateRequest $request)
+    // نمایش کامنت‌های یک مقاله
+    public function index(int $article_id, PaginateRequest $request): AnonymousResourceCollection
     {
+        $comments = $this->commentService->index($article_id, $request->all());
 
-        $articles = $this->articleService->indexArticle($request->validated());
-        return ArticleResource::collection($articles->items())
-            ->additional([
-                'meta' => [
-                    'current_page' => $articles->currentPage(),
-                    'total' => $articles->total(),
-                    'per_page' => $articles->perPage(),
-                    'last_page' => $articles->lastPage(),
-                    'next_page_url' => $articles->nextPageUrl(),
-                    'prev_page_url' => $articles->previousPageUrl(),
-                ]
-            ]);
+        return CommentResource::collection($comments);
     }
-    public function update(UpdateArticleRequest $request, int $id): JsonResponse
+
+    // ذخیره کامنت جدید
+    public function store(StoreCommentRequest $request): CommentResource
     {
+        $commentDTO = CommentDTO::fromArray($request->validated());
+        $comment = $this->commentService->store($commentDTO);
 
-        $article = Article::findOrFail($id);
-
-        $validated = $request->validated();
-
-        $articleDTO = ArticleDTO::fromArray([
-            'title'   => $validated['title'],
-            'content' => $validated['content'],
-            'user_id' => $article->user_id,
-        ]);
-        $updatedArticle = $this->articleService->updateArticle($id, $articleDTO);
-
-        return response()->json([
-            'message' => 'مقاله با موفقیت اپدیت شد',
-            'data' => new ArticleResource($updatedArticle),
-        ], 201);
+        return new CommentResource($comment);
     }
-    public function store(StoreArticleRequest $request): JsonResponse
+
+    // آپدیت کامنت
+    public function update(int $id, UpdateCommentRequest $request): CommentResource
     {
-        $validated = $request->validated();
-        $validated['user_id'] = $request->user()->id;
+        $commentDTO = CommentDTO::fromArray($request->validated());
+        $comment = $this->commentService->update($id, $commentDTO);
 
-        $articleDTO = ArticleDTO::fromArray($validated);
-        $article = $this->articleService->storeArticle($articleDTO);
+        return new CommentResource($comment);
+    }
 
-        return response()->json([
-            'message' => 'مقاله با موفقیت ایجاد شد',
-            'data' => new ArticleResource($article),
-        ], 201);
+    // حذف کامنت
+    public function destroy(int $id): \Illuminate\Http\Response
+    {
+
+        $this->commentService->delete($id);
+
+        return response()->noContent();
     }
 }
